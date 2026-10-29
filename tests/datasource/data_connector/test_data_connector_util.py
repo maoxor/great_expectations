@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from unittest import mock
 
 import pytest
@@ -119,6 +121,23 @@ def test_convert_batch_identifiers_to_data_reference_string_using_regex():
             group_names=group_names,
         )
         == "*_20200809_1000.csv"
+    )
+
+
+@pytest.mark.unit
+@pytest.mark.slow  # 1.5s: imports great_expectations in a fresh interpreter
+def test_file_path_data_connector_does_not_import_deprecated_sre_modules():
+    # sre_parse and sre_constants are deprecated since Python 3.11 and removed in 3.15.
+    # The import has to run in a fresh interpreter: the module is already imported here.
+    subprocess.run(
+        [
+            sys.executable,
+            "-W",
+            "error:module 'sre_:DeprecationWarning",
+            "-c",
+            "import great_expectations.datasource.fluent.data_connector.file_path_data_connector",
+        ],
+        check=True,
     )
 
 

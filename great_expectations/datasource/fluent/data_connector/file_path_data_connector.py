@@ -3,8 +3,7 @@ from __future__ import annotations
 import copy
 import logging
 import re
-import sre_constants
-import sre_parse
+import sys
 from abc import abstractmethod
 from collections import defaultdict
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set, Tuple, Union
@@ -32,6 +31,18 @@ if TYPE_CHECKING:
     from great_expectations.alias_types import PathStr
     from great_expectations.core.partitioners import FileNamePartitioner
     from great_expectations.datasource.fluent import BatchRequest
+
+# sre_parse and sre_constants are deprecated aliases of re._parser and re._constants since
+# Python 3.11 and were removed in Python 3.15. Type checkers only have stubs for the former.
+if TYPE_CHECKING:
+    import sre_constants
+    import sre_parse
+elif sys.version_info >= (3, 11):
+    from re import _constants as sre_constants
+    from re import _parser as sre_parse
+else:
+    import sre_constants
+    import sre_parse
 
 logger = logging.getLogger(__name__)
 
